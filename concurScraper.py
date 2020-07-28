@@ -9,9 +9,6 @@ from selenium.webdriver.common.keys import Keys
 import concurrent.futures 
 import pymysql.cursors
 
-# DB Connection
-
-
 
 # Product Creation for Product Searching
 palmolive_pamuk = Products('Palmolive Micellar Care Pamuk Özlü Duş Jeli 500 Ml', '8693495054270', 'HBV00000JVXND', '8693495054270')
@@ -66,7 +63,8 @@ class MigrosAndC4Scraper():
         search.send_keys(Keys.ENTER)
 
     def click_to_product(self): # It waits until search completed and click product to go product page
-        time.sleep(15)
+        #time.sleep(15)
+        WebDriverWait(self.driver, 100)
         # İf website shows multiple results , it looks for product that same name with searched product
         i = 1
         if (self.retailer == 'C4'):
@@ -86,7 +84,7 @@ class MigrosAndC4Scraper():
         #self.driver.find_element_by_xpath("(//div[@class='product-card product-action '])[%d]/form/div/figure" %i).click()
         
 
-    def get_infos(self):
+    def get_infos(self): # It finds all necessary information for given product and prints infos
         self.product_description = self.driver.find_element_by_xpath(self.path_list['product_description']).text
         self.packshot = self.driver.find_element_by_xpath(self.path_list['packshot']).get_attribute('src')
         self.numbers_of_packshot = self.packshot_counter()
@@ -106,7 +104,7 @@ class MigrosAndC4Scraper():
         self.primary_price, self.activity_price, end='\n')
         self.driver.close()
 
-    def packshot_counter(self):
+    def packshot_counter(self): # It manipulate given element and calculates packsot numbers
         count = 0
         packshots = self.driver.find_elements_by_xpath(self.path_list['numbers_of_packshot'])
         for packshot in packshots: # it calculates all packshots and give total number
@@ -121,17 +119,17 @@ class MigrosAndC4Scraper():
         db='retailer_products',
         charset='utf8mb4',
         cursorclass= pymysql.cursors.DictCursor)
-
-        connection = db.cursor()
-
+        # Login to mysql is settled.
+        connection = db.cursor() # Mysql connection cursor
+        # Insert scraped datas to Mysql tables
         result = connection.execute('INSERT INTO product_scrape VALUES(%s, %s, %s, %f, %s, %s, %s, %s, %s, %s)', 
         (self.retailer, self.product_description, self.packshot, self.numbers_of_packshot, 
         self.rich_content, self.brand, self.category, self.discount_rate, self.primary_price, self.activity_price))
         db.commit()
-        print(str(result) + " product info added")
+        print(str(result) + " product info added") # It prints when any data inserted to table
 
     
-    def run_and_scrape(self):
+    def run_and_scrape(self): # It runs necessary functions respectively to scrape retailers website 
         self.search_product()
         self.click_to_product()
         self.get_infos()
@@ -142,33 +140,8 @@ class MigrosAndC4Scraper():
 # Main
 if __name__ == "__main__":
     scheduled_thread()
-        # f1 = executor.submit(thread_function('Migros', palmolive_pamuk, migros_path_list))
-        # f2 = executor.submit(thread_function('Migros', palmolive_gul, migros_path_list))
-        # f3 = executor.submit(thread_function('Migros', palmolive_keten, migros_path_list))
-  
-    
 
 
-    # c4_driver = initializer()
-    # c4scrapping = MigrosAndC4Scraper('C4', palmolive_pamuk, c4_driver, c4_path_list)
-    # c4scrapping.search_product()
-    # c4scrapping.click_to_product()
-    # c4scrapping.get_infos()
-
-
-
-
-
-
-# def waiter(driver, delay, selector, path):
-#     if (selector == "ID"):
-#         WebDriverWait(driver, delay).until(
-#             EC.presence_of_element_located((By.ID, path))
-#         )
-#     if (selector == "XPATH"):
-#         WebDriverWait(driver, delay).until(
-#             EC.presence_of_element_located((By.XPATH, path))
-#         )
 # // Options for retailers
 # 'Migros
 # 'C4
