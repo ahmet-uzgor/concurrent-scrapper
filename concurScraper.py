@@ -112,19 +112,21 @@ class MigrosAndC4Scraper():
         for packshot in packshots: # it calculates all packshots and give total number
             count += 1
         # return total number of packshot
-        return (count+1)/2
+        p_number = (count+1)/2
+        return int(p_number)
 
     def write_to_mysql(self): # It connects to mysql and writes datas
+        # CREATE TABLE query is written in data.py
         db = pymysql.connect(host='localhost',
         user='web-scraping',
         password='ahmet123',
         db='retailer_products',
-        charset='utf8mb4',
+        charset="utf8mb4",
         cursorclass= pymysql.cursors.DictCursor)
         # Login to mysql is settled.
         connection = db.cursor() # Mysql connection cursor
         # Insert scraped datas to Mysql tables
-        result = connection.execute('INSERT INTO product_scrape VALUES(%s, %s, %s, %f, %s, %s, %s, %s, %s, %s)', 
+        result = connection.execute('INSERT INTO product_scrape VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
         (self.retailer, self.product_description, self.packshot, self.numbers_of_packshot, 
         self.rich_content, self.brand, self.category, self.discount_rate, self.primary_price, self.activity_price))
         db.commit()
@@ -135,7 +137,7 @@ class MigrosAndC4Scraper():
         self.search_product()
         self.click_to_product()
         self.get_infos()
-        #self.write_to_mysql()
+        self.write_to_mysql()
     
 
 
