@@ -63,10 +63,12 @@ class MigrosAndC4Scraper():
         search.send_keys(Keys.ENTER)
 
     def click_to_product(self): # It waits until search completed and click product to go product page
-        #time.sleep(15)
-        WebDriverWait(self.driver, 100)
-        # İf website shows multiple results , it looks for product that same name with searched product
+        time.sleep(15)
         i = 1
+        # WebDriverWait(self.driver, 100).until(
+        #     EC.presence_of_element_located((By.XPATH, (self.path_list['result_figures'] %i)))
+        # )
+        # İf website shows multiple results , it looks for product that same name with searched product
         if (self.retailer == 'C4'):
             self.driver.find_element_by_xpath(self.path_list['result_figures'] %i).click()
             time.sleep(10)
